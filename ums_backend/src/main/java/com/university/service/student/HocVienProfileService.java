@@ -22,13 +22,13 @@ public class HocVienProfileService {
         this.userRepo = userRepo;
     }
 
-    // 🔍 GET PROFILE
+    // GET PROFILE
     public HocVienProfileResponseDTO getProfile(UUID userId) {
         return hocVienRepo.findHocVienProfileByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy học viên"));
     }
 
-    // ✏️ UPDATE PROFILE
+    // UPDATE PROFILE
     public HocVienProfileResponseDTO updateProfile(UUID userId,
             HocVienProfileRequestDTO req) {
 
