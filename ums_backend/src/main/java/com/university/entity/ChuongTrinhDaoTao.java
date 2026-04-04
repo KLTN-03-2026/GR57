@@ -26,5 +26,4 @@ public class ChuongTrinhDaoTao {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mon_hoc_id", nullable = false)
     private MonHoc monHoc;
-
 }

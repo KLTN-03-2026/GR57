@@ -35,5 +35,4 @@ public class HocKi {
 
     @OneToMany(mappedBy = "hocKi", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HocPhi> dHocPhis = new ArrayList<>();
-
 }
