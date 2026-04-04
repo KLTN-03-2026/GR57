@@ -29,6 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         // 2. Validation errors (400) - dùng ProblemDetail chuẩn
+        @SuppressWarnings("null")
         @Override
         protected ResponseEntity<Object> handleMethodArgumentNotValid(
                         MethodArgumentNotValidException ex,
@@ -64,6 +65,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         // 4. NoResourceFoundException (404 cho static file)
+        @SuppressWarnings("null")
         @Override
         protected ResponseEntity<Object> handleNoHandlerFoundException(
                         org.springframework.web.servlet.NoHandlerFoundException ex,
@@ -93,5 +95,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
                 return pd;
         }
-
 }

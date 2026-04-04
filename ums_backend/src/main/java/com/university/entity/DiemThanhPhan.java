@@ -1,5 +1,6 @@
 package com.university.entity;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,7 +27,7 @@ public class DiemThanhPhan {
     private String ghiChu;
 
     @UpdateTimestamp
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dang_ky_tin_chi_id", nullable = false)
