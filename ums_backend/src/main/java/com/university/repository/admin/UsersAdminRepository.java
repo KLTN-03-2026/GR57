@@ -18,10 +18,10 @@ public interface UsersAdminRepository extends JpaRepository<Users, UUID> {
 
     boolean existsByUserName(String usersname);
 
-    // @Query("SELECT u.userName FROM Users u")
-    // List<String> findAllUserNames();
+    @Query("SELECT u.userName FROM Users u")
+    List<String> findAllUserNames();
 
-    // @Query("SELECT u FROM Users u WHERE u.userName = :userName")
-    // Optional<Users> findByUserName(@Param("userName") String userName);
+    @Query("SELECT u FROM Users u WHERE u.userName = :userName")
+    Optional<Users> findByUserName(@Param("userName") String userName);
 
 }
