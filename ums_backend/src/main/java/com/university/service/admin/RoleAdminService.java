@@ -55,7 +55,7 @@ public class RoleAdminService {
 
     public RoleAdminResponseDTO update(UUID id, RoleAdminRequestDTO dto) {
         Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("không tìm  thấy vai trò"));
+                .orElseThrow(() -> new EntityNotFoundException("không tìm thấy vai trò"));
         roleAdminMapper.upDateEntity(role, dto);
         return roleAdminMapper.toResponseDTO(role);
     }

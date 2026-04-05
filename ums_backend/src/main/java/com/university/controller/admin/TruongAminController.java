@@ -4,14 +4,17 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.university.dto.request.admin.TruongAdminRequestDTO;
+import com.university.dto.response.admin.ExcelImportResult;
 import com.university.dto.response.admin.TruongAdminResponseDTO;
 import com.university.dto.response.admin.TruongAdminResponseDTO.TruongView;
 import com.university.service.admin.TruongAdminService;
 
 import jakarta.validation.Valid;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +50,15 @@ public class TruongAminController {
         return ResponseEntity.ok(truongService.create(dto));
     }
 
+    @PostMapping("/import-excel")
+    public ResponseEntity<ExcelImportResult> importExcel(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        ExcelImportResult result = truongService.importFromExcel(file);
+        return ResponseEntity.ok(result);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<TruongAdminResponseDTO> update(@PathVariable UUID id,
             @RequestBody TruongAdminRequestDTO dto) {
@@ -56,6 +68,18 @@ public class TruongAminController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         truongService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseEntity<Void> deleteList(@RequestParam List<UUID> ids) {
+        truongService.deleteMultiple(ids);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/all")
+    public ResponseEntity<Void> deleteAll() {
+        truongService.deleteAll();
         return ResponseEntity.noContent().build();
     }
 }
