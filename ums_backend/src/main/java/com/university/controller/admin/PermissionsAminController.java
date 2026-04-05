@@ -1,53 +1,79 @@
-package com.university.controller.admin;
+// package com.university.controller.admin;
 
-import lombok.RequiredArgsConstructor;
+// import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.university.dto.request.admin.PermissionsAdminRequestDTO;
-import com.university.dto.response.admin.PermissionsAdminResponseDTO;
-import com.university.entity.Permissions;
-import com.university.service.admin.PermissionsAdminService;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.web.bind.annotation.*;
+// import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.UUID;
+// import com.university.dto.request.admin.PermissionsAdminRequestDTO;
+// import com.university.dto.response.admin.ExcelImportResult;
+// import com.university.dto.response.admin.PermissionsAdminResponseDTO;
+// import com.university.entity.Permissions;
+// import com.university.service.admin.PermissionsAdminService;
 
-@RestController
-@RequestMapping("/api/admin/permissions")
-@RequiredArgsConstructor
-public class PermissionsAminController {
+// import io.jsonwebtoken.io.IOException;
 
-    private final PermissionsAdminService permissionsAdminService;
+// import java.util.List;
+// import java.util.UUID;
 
-    @GetMapping
-    public ResponseEntity<List<PermissionsAdminResponseDTO>> getAll() {
-        return ResponseEntity.ok(permissionsAdminService.getAll());
-    }
+// @RestController
+// @RequestMapping("/api/admin/permissions")
+// @RequiredArgsConstructor
+// public class PermissionsAminController {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Permissions> getById(@PathVariable UUID id) {
-        return ResponseEntity.ok(permissionsAdminService.getPermissionsById(id));
-    }
+// private final PermissionsAdminService permissionsAdminService;
 
-    @GetMapping("/search")
-    public ResponseEntity<List<PermissionsAdminResponseDTO>> getByNamme(@RequestParam("keyword") String keyword) {
-        return ResponseEntity.ok(permissionsAdminService.getByMaPermissions(keyword));
-    }
+// @GetMapping
+// public ResponseEntity<List<PermissionsAdminResponseDTO>> getAll() {
+// return ResponseEntity.ok(permissionsAdminService.getAll());
+// }
 
-    @PostMapping
-    public ResponseEntity<PermissionsAdminResponseDTO> create(@RequestBody PermissionsAdminRequestDTO dto) {
-        return ResponseEntity.ok(permissionsAdminService.create(dto));
-    }
+// @GetMapping("/{id}")
+// public ResponseEntity<Permissions> getById(@PathVariable UUID id) {
+// return ResponseEntity.ok(permissionsAdminService.getPermissionsById(id));
+// }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PermissionsAdminResponseDTO> update(@PathVariable UUID id,
-            @RequestBody PermissionsAdminRequestDTO dto) {
-        return ResponseEntity.ok(permissionsAdminService.update(id, dto));
-    }
+// @GetMapping("/search")
+// public ResponseEntity<List<PermissionsAdminResponseDTO>>
+// getByNamme(@RequestParam("keyword") String keyword) {
+// return
+// ResponseEntity.ok(permissionsAdminService.getByMaPermissions(keyword));
+// }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        permissionsAdminService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-}
+// @PostMapping
+// public ResponseEntity<PermissionsAdminResponseDTO> create(@RequestBody
+// PermissionsAdminRequestDTO dto) {
+// return ResponseEntity.ok(permissionsAdminService.create(dto));
+// }
+
+// @PostMapping("/import-excel")
+// public ResponseEntity<ExcelImportResult> importExcel(@RequestParam("file")
+// MultipartFile file)
+// throws IOException, java.io.IOException {
+// if (file.isEmpty()) {
+// return ResponseEntity.badRequest().body(null);
+// }
+// ExcelImportResult result = permissionsAdminService.importFromExcel(file);
+// return ResponseEntity.ok(result);
+// }
+
+// @PutMapping("/{id}")
+// public ResponseEntity<PermissionsAdminResponseDTO> update(@PathVariable UUID
+// id,
+// @RequestBody PermissionsAdminRequestDTO dto) {
+// return ResponseEntity.ok(permissionsAdminService.update(id, dto));
+// }
+
+// @DeleteMapping("/{id}")
+// public ResponseEntity<Void> delete(@PathVariable UUID id) {
+// permissionsAdminService.delete(id);
+// return ResponseEntity.noContent().build();
+// }
+
+// @DeleteMapping("/all")
+// public ResponseEntity<Void> deleteAll() {
+// permissionsAdminService.deleteAllPermissons();
+// return ResponseEntity.noContent().build();
+// }
+// }

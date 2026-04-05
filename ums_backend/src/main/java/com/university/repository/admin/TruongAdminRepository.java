@@ -23,6 +23,11 @@ public interface TruongAdminRepository extends JpaRepository<Truong, UUID> {
 
     boolean existsByMaTruong(String maTruong);
 
+    List<Truong> findByMaTruongIn(List<String> maTruongs);
+
+    @Query("SELECT t.maTruong FROM Truong t")
+    List<String> findAllMaTruong();
+
     @Query("""
              SELECT new com.university.dto.response.admin.TruongAdminResponseDTO(
                  t.id,
@@ -77,4 +82,7 @@ public interface TruongAdminRepository extends JpaRepository<Truong, UUID> {
             """)
 
     TruongView findTruongView(@Param("truongId") UUID truongId);
+
+    @Query(" DELETE FROM Truong")
+    void deleteAll();
 }
