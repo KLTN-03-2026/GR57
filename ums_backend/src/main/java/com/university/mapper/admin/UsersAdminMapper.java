@@ -2,24 +2,16 @@ package com.university.mapper.admin;
 
 import java.time.LocalDateTime;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import com.university.dto.request.admin.UsersAdminRequestDTO;
 import com.university.dto.response.admin.UsersAdminResponseDTO;
 import com.university.entity.Users;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class UsersAdminMapper {
 
-    private final PasswordEncoder passwordEncoder;
-
-    public Users toEntity(UsersAdminRequestDTO dto) {
-        dto.setPassWord(passwordEncoder.encode(dto.getPassWord()));
-        Users user = new Users();
+    public Users toEntity(UsersAdminRequestDTO dto, Users user) {
         user.setUserName(dto.getUserName());
-        user.setPassWord(dto.getPassWord());
         user.setEmail(dto.getEmail());
         user.setCccd(dto.getCccd());
         user.setHoTen(dto.getHoTen());
@@ -54,8 +46,8 @@ public class UsersAdminMapper {
     public UsersAdminResponseDTO toResponseDTO(Users users) {
         UsersAdminResponseDTO dto = new UsersAdminResponseDTO();
         dto.setId(users.getId());
-        dto.setUserName(users.getUserName());
-        dto.setPassWord(users.getPassWord());
+        dto.setUserName(users.getUsername());
+        dto.setPassWord(users.getPassword());
         dto.setEmail(users.getEmail());
         dto.setCccd(users.getCccd());
         dto.setHoTen(users.getHoTen());

@@ -2,9 +2,6 @@ package com.university.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +23,6 @@ public class DiemThanhPhan {
 
     private String ghiChu;
 
-    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
