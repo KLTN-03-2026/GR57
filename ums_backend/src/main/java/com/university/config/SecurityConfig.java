@@ -1,48 +1,52 @@
 package com.university.config;
 
+import com.university.service.auth.CustomUserDetailsService;
+import com.university.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+        private final JwtUtil jwtUtil;
+        private final CustomUserDetailsService userDetailsService; // ← Inject interface
+
+        @Bean
+        public JwtAuthenticationFilter jwtAuthenticationFilter() {
+                JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
+                filter.setUserDetailsService(userDetailsService); // ← Setter injection
+                return filter;
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
-                                .csrf(csrf -> csrf.disable()) // REST API thường disable
+                                .csrf(csrf -> csrf.disable())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                                 .authorizeHttpRequests(auth -> auth
-                                                // Public endpoints
-                                                .requestMatchers(
-                                                                "/api/**",
-                                                                "/api/auth/**",
-                                                                "/api/public/**")
+                                                .requestMatchers("/api/auth/login", "/api/auth/register",
+                                                                "/swagger-ui/**", "/v3/api-docs/**")
                                                 .permitAll()
 
-                                                // Actuator nếu cần
-                                                // .requestMatchers("/actuator/health").permitAll()
+                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                                                .requestMatchers("/api/**").authenticated()
 
-                                                // Tất cả còn lại phải auth (sẽ dùng JWT hoặc session sau)
-                                                .anyRequest().authenticated());
+                                                .anyRequest().permitAll())
 
-                // Nếu sau này thêm JWT:
-                // http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
-
-                // Nếu dùng form login (web):
-                // http.formLogin(Customizer.withDefaults());
+                                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
-        }
-
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder(12); // strength 12 là tốt
         }
 
         @Bean

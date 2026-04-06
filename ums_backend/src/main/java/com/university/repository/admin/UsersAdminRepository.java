@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -21,7 +20,7 @@ public interface UsersAdminRepository extends JpaRepository<Users, UUID> {
     @Query("SELECT u.userName FROM Users u")
     List<String> findAllUserNames();
 
-    @Query("SELECT u FROM Users u WHERE u.userName = :userName")
-    Optional<Users> findByUserName(@Param("userName") String userName);
+    @Query("SELECT u FROM Users u WHERE u.userName = :username")
+    Users findByUserName(@Param("username") String username);
 
 }

@@ -32,7 +32,10 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities()); // lưu roles/authorities
+        claims.put("roles", userDetails.getAuthorities()
+                .stream()
+                .map(auth -> auth.getAuthority())
+                .toList());
 
         return Jwts.builder()
                 .claims(claims)
@@ -58,6 +61,8 @@ public class JwtUtil {
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
+                .requireIssuer("university-app")
+                .requireAudience("university-api")
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -80,4 +85,5 @@ public class JwtUtil {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+
 }
