@@ -80,7 +80,6 @@ public interface TruongAdminRepository extends JpaRepository<Truong, UUID> {
              FROM Truong t
              WHERE t.id = :truongId
             """)
-
     TruongView findTruongView(@Param("truongId") UUID truongId);
 
     @Query(" DELETE FROM Truong")

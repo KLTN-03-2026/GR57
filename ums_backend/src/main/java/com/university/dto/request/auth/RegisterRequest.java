@@ -9,16 +9,16 @@ import lombok.Setter;
 @Setter
 public class RegisterRequest {
 
-    private String username;
+    private String userName;
 
-    private String password;
+    private String passWord;
 
     private LocalDateTime createDate;
 
-    public RegisterRequest(String username, String password, LocalDateTime createDate,
+    public RegisterRequest(String userName, String passWord, LocalDateTime createDate,
             Role role) {
-        this.username = username;
-        this.password = password;
+        this.userName = userName;
+        this.passWord = passWord;
         this.createDate = createDate;
     }
 }
