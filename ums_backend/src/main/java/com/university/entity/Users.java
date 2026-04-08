@@ -4,11 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.university.enums.GioiTinhEnum;
 
@@ -18,7 +22,7 @@ import com.university.enums.GioiTinhEnum;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users {
+public class Users implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -81,5 +85,20 @@ public class Users {
 
   @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
   private HocVien hocVien;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+  }
+
+  @Override
+  public String getUsername() {
+    return this.userName;
+  }
+
+  @Override
+  public String getPassword() {
+    return this.passWord;
+  }
 
 }

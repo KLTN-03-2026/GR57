@@ -3,6 +3,7 @@ package com.university.repository.admin;
 import com.university.dto.response.admin.PermissionsAdminResponseDTO;
 import com.university.entity.Permissions;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -48,6 +49,9 @@ public interface PermissionsAdminRepository extends JpaRepository<Permissions, U
 
     boolean existsByMaPermissions(String maPermissions);
 
+    @Query("SELECT p.maPermissions FROM Permissions p")
+    List<String> findAllMaPermissions();
+
     @Query("""
             SELECT COUNT(p)
             FROM Permissions p
@@ -56,4 +60,7 @@ public interface PermissionsAdminRepository extends JpaRepository<Permissions, U
             """)
     long checkPermissionsUsed(UUID permissionsId);
 
+    @Modifying
+    @Query(" DELETE FROM Permissions p ")
+    void deleteAllPermissions();
 }

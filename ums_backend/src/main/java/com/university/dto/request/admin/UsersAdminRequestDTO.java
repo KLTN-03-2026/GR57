@@ -1,7 +1,6 @@
 package com.university.dto.request.admin;
 
-import java.time.LocalDateTime;
-
+import java.time.LocalDate;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,16 +28,12 @@ public class UsersAdminRequestDTO {
     private String hoTen;
     private String diaChi;
     private GioiTinhEnum gioiTinh;
-    @JsonFormat(pattern = "dd/MM/yyyy : hh:mm:ss")
-    private LocalDateTime ngaySinh;
-    @Length(max = 10, message = "Số  điện thoại không quá 10 ki tự")
+    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
+    private LocalDate ngaySinh;
+    @Length(max = 10, message = "Số điện thoại không quá 10 ki tự")
     private String soDienThoai;
     @NotNull(message = "Trạng thái của tài khoản phải là Khóa hoặc Mở")
     private Boolean trangThai;
     private String ghiChu;
-    @JsonFormat(pattern = "dd/MM/yyyy : hh:mm:ss")
-    private LocalDateTime createAt;
-    @JsonFormat(pattern = "dd/MM/yyyy : hh:mm:ss")
-    private LocalDateTime updateAt;
 
 }

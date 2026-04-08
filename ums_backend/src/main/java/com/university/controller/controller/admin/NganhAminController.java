@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/nganh")
+@RequestMapping("/api/admin/nganh")
 @RequiredArgsConstructor
 public class NganhAminController {
 
@@ -42,7 +42,8 @@ public class NganhAminController {
     // }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NganhAdminResponseDTO> update(@PathVariable UUID id, @RequestBody @Valid NganhAminRequestDTO dto) {
+    public ResponseEntity<NganhAdminResponseDTO> update(@PathVariable UUID id,
+            @RequestBody @Valid NganhAminRequestDTO dto) {
         return ResponseEntity.ok(nganhService.update(id, dto));
     }
 

@@ -22,26 +22,44 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration:900000}") // default 15 phút (900000 ms)
-    private long expirationMs;
+    @Value("${jwt.expiration:900000}") // 15 phút cho Access Token
+    private long accessTokenExpirationMs;
+
+    @Value("${jwt.refresh-expiration:604800000}") // 7 ngày cho Refresh Token (604800000 ms)
+    private long refreshTokenExpirationMs;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    // Tạo Access Token (ngắn hạn)
+    public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities()); // lưu roles/authorities
+        claims.put("roles", userDetails.getAuthorities()
+                .stream()
+                .map(auth -> auth.getAuthority())
+                .toList());
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationMs))
-                .issuer("university-app") // thêm issuer
-                .audience().add("university-api") // thêm audience
-                .and()
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs))
+                .issuer("university-app")
+                .audience().add("university-api").and()
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    // Tạo Refresh Token (dài hạn)
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))
+                .issuer("university-app")
+                .claim("tokenType", "refresh")
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -58,6 +76,7 @@ public class JwtUtil {
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
+                .requireIssuer("university-app")
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -79,5 +98,15 @@ public class JwtUtil {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    // Kiểm tra token có phải refresh token không
+    public boolean isRefreshToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return "refresh".equals(claims.get("tokenType"));
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
