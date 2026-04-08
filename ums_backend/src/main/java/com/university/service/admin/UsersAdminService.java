@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.university.dto.request.admin.UsersAdminRequestDTO;
 import com.university.dto.response.admin.ExcelImportResult;
 import com.university.dto.response.admin.UsersAdminResponseDTO;
+import com.university.dto.response.admin.UsersAdminResponseDTO.UserView;
 import com.university.entity.Users;
 import com.university.exception.SimpleMessageException;
 import com.university.mapper.admin.UsersAdminMapper;
@@ -25,21 +26,21 @@ import java.util.UUID;
 @Service
 public class UsersAdminService implements CustomUserDetailsService {
 
-    private final UsersAdminRepository usersRepository;
+    private final UsersAdminRepository usersAdminRepository;
     private final UsersAdminMapper usersMapper;
     private final PasswordEncoder passwordEncoder;
     private final Set<String> userNameInDb;
 
     public UsersAdminService(UsersAdminRepository usersRepository, UsersAdminMapper usersMapper,
             PasswordEncoder passwordEncoder, Set<String> userNameInDb) {
-        this.usersRepository = usersRepository;
+        this.usersAdminRepository = usersRepository;
         this.usersMapper = usersMapper;
         this.passwordEncoder = passwordEncoder;
         this.userNameInDb = userNameInDb;
     }
 
     public ExcelImportResult importFromExcel(MultipartFile file) throws java.io.IOException {
-        UsersExcelListener listener = new UsersExcelListener(usersRepository);
+        UsersExcelListener listener = new UsersExcelListener(usersAdminRepository);
 
         EasyExcel.read(file.getInputStream(), UsersAdminRequestDTO.class, listener)
                 .sheet("Users")
@@ -52,75 +53,94 @@ public class UsersAdminService implements CustomUserDetailsService {
     public UsersAdminResponseDTO create(UsersAdminRequestDTO dto) {
         Users users = new Users();
         users.setPassWord(passwordEncoder.encode(dto.getPassWord()));
-        userNameInDb.addAll(usersRepository.findAllUserNames());
+        userNameInDb.addAll(usersAdminRepository.findAllUserNames());
         if (userNameInDb.contains(dto.getUserName())) {
             throw new SimpleMessageException("UserName đã tồn tại");
         }
-        return usersMapper.toResponseDTO(usersRepository.save(usersMapper.toEntity(dto, users)));
+        return usersMapper.toResponseDTO(usersAdminRepository.save(usersMapper.toEntity(dto, users)));
     }
 
     public List<UsersAdminResponseDTO> getAll() {
-        return usersRepository.findAll().stream()
-                .map(usersMapper::toResponseDTO)
-                .toList();
+        return usersAdminRepository.FindAllDTO();
     }
 
     public UsersAdminResponseDTO getById(UUID id) {
-        UsersAdminResponseDTO users = usersRepository.findById(id)
-                .map(usersMapper::toResponseDTO)
-                .orElseThrow(() -> new SimpleMessageException("Users không tồn tại"));
+        UsersAdminResponseDTO users = usersAdminRepository.findUsersById(id);
+        if (users.equals(null)) {
+            throw new RuntimeException("Users không tồn tại");
+        }
         return users;
     }
 
+    public UserView getByView(UUID id) {
+        UserView userView = usersAdminRepository.findByView(id);
+        return userView;
+    }
+
+    public List<UsersAdminResponseDTO> getByHoTen(String hoTen) {
+        return usersAdminRepository.findUsersByHoTen(hoTen);
+    }
+
     public Users getByUserName(String userName) {
-        Users users = usersRepository.findByUserName(userName);
+        Users users = usersAdminRepository.findByUserName(userName);
         return users;
     }
 
     public UsersAdminResponseDTO update(UUID id, UsersAdminRequestDTO dto) {
-        Users users = usersRepository.findById(id)
+        Users users = usersAdminRepository.findById(id)
                 .orElseThrow(() -> new SimpleMessageException("Users không tồn tại"));
         usersMapper.updateEntity(users, dto);
-        usersRepository.save(users);
+        usersAdminRepository.save(users);
         return usersMapper.toResponseDTO(users);
     }
 
     public void delete(UUID id) {
-        if (!usersRepository.existsById(id)) {
+        if (!usersAdminRepository.existsById(id)) {
             throw new SimpleMessageException("Users không tồn tại");
         }
-        usersRepository.deleteById(id);
+        usersAdminRepository.deleteById(id);
     }
 
     @Transactional
     public void deleteMultiple(List<UUID> ids) {
-        usersRepository.deleteAllByIdInBatch(ids);
+        usersAdminRepository.deleteAllByIdInBatch(ids);
     }
 
+    @Transactional
     public void deleteAll() {
-        usersRepository.deleteAll();
+        usersAdminRepository.deleteUsersAll();
+    }
+
+    public List<String> dSNameRoleUSers(String username) {
+        return usersAdminRepository.findALlNameRoleByUserName(username);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Users user = usersRepository.findByUserName(username); // reuse method của bạn
+        Users user = usersAdminRepository.findByUserName(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Không tìm thấy user: " + username);
+        }
 
-        // Xác định Role từ database (hiện tại bạn có mrole = "ADMIN")
-        // String role = user.getDUserRoles() != null ? user.getDUserRoles().toString()
-        // : "USERS"; // fallbac
-        String role = "ADMIN";
-        // Nếu bạn muốn hỗ trợ nhiều role sau này thì dùng List
-        List<SimpleGrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+        // Lấy List role từ database (phương thức findALlNameRoleByUserName)
+        List<String> roleNames = usersAdminRepository.findALlNameRoleByUserName(username);
+
+        // Chuyển thành GrantedAuthority
+        List<SimpleGrantedAuthority> authorities = roleNames.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase().trim()))
+                .toList();
+
+        // Nếu không có role nào thì fallback về USER
+        if (authorities.isEmpty()) {
+            authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
-                .password(user.getPassword()) // phải là password đã bcrypt
+                .password(user.getPassword())
                 .authorities(authorities)
-                .accountExpired(false)
-                .accountLocked(false)
-                .credentialsExpired(false)
-                .disabled(!Boolean.TRUE.equals(user.isTrangThai())) // nếu có trường trangThai
+                .disabled(!Boolean.TRUE.equals(user.isTrangThai()))
                 .build();
     }
 }

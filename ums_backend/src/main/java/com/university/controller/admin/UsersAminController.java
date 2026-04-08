@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.university.dto.request.admin.UsersAdminRequestDTO;
 import com.university.dto.response.admin.UsersAdminResponseDTO;
+import com.university.dto.response.admin.UsersAdminResponseDTO.UserView;
 import com.university.service.admin.UsersAdminService;
 
 import jakarta.validation.Valid;
@@ -36,11 +37,15 @@ public class UsersAminController {
         return ResponseEntity.ok(usersAdminService.getById(id));
     }
 
-    // @GetMapping("/search")
-    // public ResponseEntity<List<UsersAdminResponseDTO>>
-    // getByNamme(@RequestParam("keyword") String keyword) {
-    // return ResponseEntity.ok(roleAdminService.findByUserName(keyword));
-    // }
+    @GetMapping("/search")
+    public ResponseEntity<List<UsersAdminResponseDTO>> getByHoTen(@RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok(usersAdminService.getByHoTen(keyword));
+    }
+
+    @GetMapping("/users-view")
+    public ResponseEntity<UserView> getByView(@PathVariable UUID id) {
+        return ResponseEntity.ok(usersAdminService.getByView(id));
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<UsersAdminResponseDTO> update(@Valid @PathVariable UUID id,

@@ -1,7 +1,7 @@
 package com.university.dto.response.auth;
 
 import java.util.List;
-import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -13,11 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginResponseDTO {
-    private UUID id;
-    private String username;
+public class RefreshResponseDTO {
     private String accessToken;
     private String refreshToken;
     List<String> dRole;
-
 }
