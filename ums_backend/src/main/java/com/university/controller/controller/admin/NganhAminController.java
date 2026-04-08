@@ -1,4 +1,4 @@
-package com.university.controller.admin;
+package com.university.controller.controller.admin;
 
 import com.university.dto.request.admin.NganhAminRequestDTO;
 import com.university.dto.response.admin.NganhAdminResponseDTO;

@@ -1,4 +1,4 @@
-package com.university.controller.admin;
+package com.university.controller.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
