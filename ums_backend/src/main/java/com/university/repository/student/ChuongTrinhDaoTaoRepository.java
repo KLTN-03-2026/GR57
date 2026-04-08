@@ -13,40 +13,40 @@ import java.util.UUID;
 @Repository
 public interface ChuongTrinhDaoTaoRepository extends JpaRepository<ChuongTrinhDaoTao, UUID> {
 
-  @Query("""
-      SELECT new com.university.dto.response.student.ChuongTrinhDaoTaoResponseDTO(
-          c.id,
-          n.maNganh,
-          n.tenNganh,
-          m.maMonHoc,
-          m.tenMonHoc,
-          m.soTinChi,
-          m.moTa
-      )
-         FROM ChuongTrinhDaoTao c
-           JOIN c.nganh n
-           JOIN c.monHoc m
-        WHERE c.nganh.id = :nganhId
-         """)
-  List<ChuongTrinhDaoTaoResponseDTO> findByNganhId(@Param("nganhId") UUID nganhId);
+    @Query("""
+            SELECT new com.university.dto.response.student.ChuongTrinhDaoTaoResponseDTO(
+                c.id,
+                n.maNganh,
+                n.tenNganh,
+                m.maMonHoc,
+                m.tenMonHoc,
+                m.soTinChi,
+                m.moTa
+            )
+               FROM ChuongTrinhDaoTao c
+                 JOIN c.nganh n
+                 JOIN c.monHoc m
+              WHERE c.nganh.id = :nganhId
+               """)
+    List<ChuongTrinhDaoTaoResponseDTO> findByNganhId(@Param("nganhId") UUID nganhId);
 
-  @Query("""
-        SELECT new com.university.dto.response.student.ChuongTrinhDaoTaoResponseDTO(
-          c.id,
-          n.maNganh,
-          n.tenNganh,
-          m.maMonHoc,
-          m.tenMonHoc,
-          m.soTinChi,
-          m.moTa
-      )
-        FROM ChuongTrinhDaoTao c
-          JOIN c.nganh n
-          JOIN c.monHoc m
-          WHERE c.nganh.id = :nganhId
-          AND (LOWER(m.maMonHoc) LIKE LOWER(CONCAT('%', :keyword, '%'))
-          OR LOWER(m.tenMonHoc) LIKE LOWER(CONCAT('%', :keyword, '%')))
-          """)
-  List<ChuongTrinhDaoTaoResponseDTO> findByNganhIdAndKeyword(@Param("nganhId") UUID nganhId,
-      @Param("keyword") String keyword);
+    @Query("""
+              SELECT new com.university.dto.response.student.ChuongTrinhDaoTaoResponseDTO(
+                c.id,
+                n.maNganh,
+                n.tenNganh,
+                m.maMonHoc,
+                m.tenMonHoc,
+                m.soTinChi,
+                m.moTa
+            )
+              FROM ChuongTrinhDaoTao c
+                JOIN c.nganh n
+                JOIN c.monHoc m
+                WHERE c.nganh.id = :nganhId
+                AND (LOWER(m.maMonHoc) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(m.tenMonHoc) LIKE LOWER(CONCAT('%', :keyword, '%')))
+                """)
+    List<ChuongTrinhDaoTaoResponseDTO> findByNganhIdAndKeyword(@Param("nganhId") UUID nganhId,
+            @Param("keyword") String keyword);
 }

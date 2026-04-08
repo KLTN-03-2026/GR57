@@ -33,8 +33,8 @@ public class MonHoc {
 
     @OneToMany(mappedBy = "monHoc", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChuongTrinhDaoTao> dChuongTrinhDaoTaos = new ArrayList<>();
-
+    // Môn học có thể có nhiều môn tiên quyết
     @OneToMany(mappedBy = "monHoc", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MonHocTienQuyet> dMonHocTienQuyets = new ArrayList<>();
-
+    
 }

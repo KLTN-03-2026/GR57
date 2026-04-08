@@ -26,5 +26,8 @@ public class MonHocTienQuyet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mon_hoc_id", nullable = false)
     private MonHoc monHoc;
-
+    // Môn học tiên quyết 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mon_tien_quyet_id", nullable = false)
+    private MonHoc monTienQuyet;
 }

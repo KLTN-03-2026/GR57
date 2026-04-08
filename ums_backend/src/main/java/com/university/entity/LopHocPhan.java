@@ -3,7 +3,7 @@ package com.university.entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+import java.time.LocalDateTime;
 import com.university.enums.TrangThaiLHP;
 
 import jakarta.persistence.*;
@@ -28,6 +28,13 @@ public class LopHocPhan {
 
     @Enumerated(EnumType.STRING)
     private TrangThaiLHP trangThai;
+
+    // ✅ THÊM MỚI
+    @Column(nullable = false)
+    private LocalDateTime hanDangKy;
+
+    @Column(nullable = false)
+    private LocalDateTime hanHuy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hoc_ki_id", nullable = false)
@@ -60,5 +67,4 @@ public class LopHocPhan {
 
     @OneToMany(mappedBy = "lopHocPhan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Quiz> dQuizs = new ArrayList<>();
-
 }
