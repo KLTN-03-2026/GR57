@@ -5,7 +5,7 @@
 !**/src/test/**/target/
 *.log
 logs
-
+.vscode
 # ========== Config / Env ==========
 .env
 application-local.properties
