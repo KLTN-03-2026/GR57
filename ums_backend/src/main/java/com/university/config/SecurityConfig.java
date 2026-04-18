@@ -17,7 +17,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
         private final JwtUtil jwtUtil;
-        private final CustomUserDetailsService userDetailsService; // ← Inject interface
+        private final CustomUserDetailsService userDetailsService;
+        private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+        private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
         @Bean
         public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -44,6 +46,9 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/accounting/**").hasAnyRole("ACCOUNTING", "ADMIN")
                                                 .requestMatchers("/api/**").authenticated()
                                                 .anyRequest().permitAll())
+                                .exceptionHandling(ex -> ex
+                                                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                                                .accessDeniedHandler(customAccessDeniedHandler))
                                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
