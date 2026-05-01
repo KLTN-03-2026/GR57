@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -34,12 +35,18 @@ public class JwtUtil {
     }
 
     // Tạo Access Token (ngắn hạn)
-    public String generateAccessToken(UserDetails userDetails) {
+    public String generateAccessToken(UserDetails userDetails, List<String> permissions) {
         Map<String, Object> claims = new HashMap<>();
+
+        // roles
         claims.put("roles", userDetails.getAuthorities()
                 .stream()
                 .map(auth -> auth.getAuthority())
                 .toList());
+
+        claims.put("permissions", permissions);
+
+        claims.put("tokenType", "access");
 
         return Jwts.builder()
                 .claims(claims)
@@ -64,6 +71,11 @@ public class JwtUtil {
                 .compact();
     }
 
+    public List<String> extractPermissions(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("permissions", List.class);
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -74,12 +86,26 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .requireIssuer("university-app")
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .requireIssuer("university-app")
+                    .clockSkewSeconds(60)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    public boolean isAccessToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return "access".equals(claims.get("tokenType"));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -100,13 +126,17 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Kiểm tra token có phải refresh token không
-    public boolean isRefreshToken(String token) {
+    public boolean isRefreshTokenValid(String token) {
         try {
             Claims claims = extractAllClaims(token);
-            return "refresh".equals(claims.get("tokenType"));
+
+            return "refresh".equals(claims.get("tokenType"))
+                    && !isTokenExpired(token);
+
         } catch (Exception e) {
+            logger.debug("Invalid refresh token: {}", e.getMessage());
             return false;
         }
     }
+
 }

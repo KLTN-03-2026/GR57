@@ -14,8 +14,20 @@ public class ChuongTrinhDaoTaoAdminResponseDTO {
     private UUID monHocId;
 
     public interface ChuongTrinhDaoTaoView {
+
         UUID getId();
 
+        NganhInfo getNganh();
+
+        MonHocInfo getMonHoc();
+
+        interface NganhInfo {
+            UUID getId();
+        }
+
+        interface MonHocInfo {
+            UUID getId();
+        }
     }
 
 }

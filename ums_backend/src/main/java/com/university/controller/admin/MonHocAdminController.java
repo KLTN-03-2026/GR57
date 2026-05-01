@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin/monhoc")
+@RequestMapping("/api/admin/mon-hoc")
 @RequiredArgsConstructor
 public class MonHocAdminController {
 
