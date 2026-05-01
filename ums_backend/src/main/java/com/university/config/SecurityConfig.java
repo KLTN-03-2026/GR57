@@ -24,7 +24,7 @@ public class SecurityConfig {
         @Bean
         public JwtAuthenticationFilter jwtAuthenticationFilter() {
                 JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
-                filter.setUserDetailsService(userDetailsService); // ← Setter injection
+                filter.setUserDetailsService(userDetailsService);
                 return filter;
         }
 
@@ -36,7 +36,7 @@ public class SecurityConfig {
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**",
+                                                .requestMatchers("/api/**",
                                                                 "/swagger-ui/**", "/v3/api-docs/**")
                                                 .permitAll()
 

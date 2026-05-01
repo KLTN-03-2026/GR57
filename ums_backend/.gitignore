@@ -4,10 +4,11 @@
 !**/src/main/**/target/
 !**/src/test/**/target/
 *.log
-logs
-.vscode
+
 # ========== Config / Env ==========
 .env
+.gitignore
+logs
 application-local.properties
 application-dev.properties
 application-prod.properties

@@ -10,6 +10,7 @@ TrangThaiLHP {MO_DANG_KY,DANG_HOC,DA_KET_THUC}
 https://myaccount.google.com/apppasswords
 
 Lấy danh sách:
-Invoke-RestMethod ` -Uri "http://localhost:8080/api/**" -Method GET/POST/PUT/DELETE
+Invoke-RestMethod ` -Uri "https://be-university.onrender.com/api/users" -Method GET 
+Invoke-RestMethod ` -Uri "http://localhost:8080/api/users" -Method GET
 
 

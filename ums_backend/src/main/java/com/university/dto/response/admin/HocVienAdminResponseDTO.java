@@ -22,7 +22,20 @@ public class HocVienAdminResponseDTO {
     private UUID nganhId;
 
     public interface HocVienView {
+
         UUID getId();
+
+        String getMaHocVien();
+
+        LocalDateTime getNgayNhapHoc();
+
+        LocalDateTime getNgayTotNghiep();
+
+        NganhInfo getNganh();
+
+        interface NganhInfo {
+            UUID getId();
+        }
     }
 
 }

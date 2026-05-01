@@ -5,14 +5,18 @@ import com.university.dto.response.admin.UsersRoleAdminResponseDTO;
 import com.university.entity.Role;
 import com.university.entity.UserRole;
 import com.university.entity.Users;
-import com.university.exception.SimpleMessageException;
 import com.university.mapper.admin.UserRoleAdminMapper;
 import com.university.repository.admin.RoleAdminRepository;
 import com.university.repository.admin.UserRoleAdminRepository;
 import com.university.repository.admin.UsersAdminRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,24 +27,37 @@ public class UserRoleAdminService {
     private final UserRoleAdminMapper userRoleAdminMapper;
     private final UserRoleAdminRepository userRoleAdminRepository;
 
-    public UsersRoleAdminResponseDTO create(UserRoleAdminRequestDTO dto) {
-        try {
-            Users users = usersAdminRepository.findById(dto.getUsersId()).orElseThrow();
-            Role role = roleRepository.findById(dto.getRoleId()).orElseThrow();
-            if (userRoleAdminRepository.existsByUsersId(dto.getUsersId())
-                    && userRoleAdminRepository.existsByRoleId(dto.getRoleId())) {
-                throw new SimpleMessageException("Da ton tai trong BD");
+    @Transactional
+    public List<UsersRoleAdminResponseDTO> createListUserRole(List<UserRoleAdminRequestDTO> requests) {
+
+        List<UserRole> list = requests.stream().map(req -> {
+
+            Users users = usersAdminRepository.findById(req.getUsersId()).orElseThrow();
+            Role role = roleRepository.findById(req.getUsersId()).orElseThrow();
+
+            if (usersAdminRepository.existsById(req.getUsersId())) {
+                throw new EntityNotFoundException("Users or học không tồn tại");
             }
 
+            if (users == null || role == null) {
+                throw new EntityNotFoundException("Users or role không tồn tại");
+            }
             UserRole userRole = userRoleAdminMapper.toEntity(role, users);
-            userRoleAdminRepository.save(userRole);
 
-            // ✅ convert sang DTO
-            return userRoleAdminMapper.toResponseDTO(userRole);
+            return userRole;
 
-        } catch (Exception e) {
-            throw new SimpleMessageException("Thêm vai trò cho user không thành công! " + e.getMessage());
-        }
+        }).toList();
+
+        List<UserRole> savedList = userRoleAdminRepository.saveAll(list);
+
+        return savedList.stream()
+                .map(userRoleAdminMapper::toResponseDTO)
+                .toList();
+    }
+
+    public void delete(UUID id) {
+        UserRole userRole = userRoleAdminRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+        userRoleAdminRepository.delete(userRole);
     }
 
 }

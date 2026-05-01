@@ -65,6 +65,10 @@ public class NganhAdminService {
     }
 
     public void delete(UUID id) {
+        Nganh nganh = nganhRepository.findById(id).orElseThrow();
+        if (nganh == null) {
+            throw new EntityNotFoundException("Nganh ko ton tai");
+        }
         nganhRepository.deleteById(id);
     }
 }

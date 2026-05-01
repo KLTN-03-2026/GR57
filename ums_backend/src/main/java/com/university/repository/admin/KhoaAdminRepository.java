@@ -11,7 +11,14 @@ import java.util.UUID;
 
 public interface KhoaAdminRepository extends JpaRepository<Khoa, UUID> {
 
+    List<KhoaAdminResponseDTO.KhoaView> findAllProjectedBy();
+
+    KhoaAdminResponseDTO.KhoaView findAllProjectedById(UUID khoaId);
+
     boolean existsByMaKhoa(String maKhoa);
+
+    @Query("SELECT k.maKhoa FROM Khoa k")
+    List<String> findAllMaKhoa();
 
     @Query("""
              SELECT new com.university.dto.response.admin.KhoaAdminResponseDTO(

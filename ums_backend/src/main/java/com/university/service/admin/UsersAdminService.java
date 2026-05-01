@@ -11,6 +11,8 @@ import com.university.mapper.admin.UsersAdminMapper;
 import com.university.repository.admin.UsersAdminRepository;
 import com.university.service.admin.excel.UsersExcelListener;
 import com.university.service.auth.CustomUserDetailsService;
+
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,23 +53,24 @@ public class UsersAdminService implements CustomUserDetailsService {
     }
 
     public UsersAdminResponseDTO create(UsersAdminRequestDTO dto) {
-        Users users = new Users();
-        users.setPassWord(passwordEncoder.encode(dto.getPassWord()));
+        
         userNameInDb.addAll(usersAdminRepository.findAllUserNames());
         if (userNameInDb.contains(dto.getUserName())) {
             throw new SimpleMessageException("UserName đã tồn tại");
         }
-        return usersMapper.toResponseDTO(usersAdminRepository.save(usersMapper.toEntity(dto, users)));
+        Users users = usersMapper.toEntity(dto);
+        users.setPassWord(passwordEncoder.encode(dto.getPassWord()));
+        return usersMapper.toResponseDTO(usersAdminRepository.save(users));
     }
 
     public List<UsersAdminResponseDTO> getAll() {
-        return usersAdminRepository.FindAllDTO();
+        return usersAdminRepository.findAllDTO();
     }
 
     public UsersAdminResponseDTO getById(UUID id) {
         UsersAdminResponseDTO users = usersAdminRepository.findUsersById(id);
         if (users.equals(null)) {
-            throw new RuntimeException("Users không tồn tại");
+            throw new EntityNotFoundException("Users không tồn tại");
         }
         return users;
     }
@@ -82,7 +85,7 @@ public class UsersAdminService implements CustomUserDetailsService {
     }
 
     public UsersAdminResponseDTO getByUserName(String userName) {
-        UsersAdminResponseDTO users = usersAdminRepository.findByUserName(userName);
+        UsersAdminResponseDTO users = usersAdminRepository.findByUserNameDTO(userName);
         return users;
     }
 
@@ -108,7 +111,8 @@ public class UsersAdminService implements CustomUserDetailsService {
 
     @Transactional
     public void deleteAll() {
-        usersAdminRepository.deleteUsersAll();
+        usersAdminRepository.deleteAll();
+        ;
     }
 
     public List<String> dSNameRoleUSers(UUID id) {
@@ -117,7 +121,7 @@ public class UsersAdminService implements CustomUserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UsersAdminResponseDTO user = usersAdminRepository.findByUserName(username);
+        UsersAdminResponseDTO user = usersAdminRepository.findByUserNameDTO(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("Không tìm thấy user: " + username);

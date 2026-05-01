@@ -2,11 +2,13 @@ package com.university.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.university.dto.request.admin.KhoaAminRequestDTO;
+import com.university.dto.request.admin.KhoaAdminRequestDTO;
 import com.university.dto.response.admin.KhoaAdminResponseDTO;
 import com.university.service.admin.KhoaAdminService;
 
@@ -21,18 +23,24 @@ public class KhoaAdminController {
     private final KhoaAdminService khoaService;
 
     @PostMapping
-    public ResponseEntity<KhoaAdminResponseDTO> create(@RequestBody @Valid KhoaAminRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(khoaService.create(dto));
+    public ResponseEntity<KhoaAdminResponseDTO> createKhoa(@RequestBody @Valid KhoaAdminRequestDTO dto)
+            throws BadRequestException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(khoaService.createKhoa(dto));
+    }
+
+    @PostMapping("list")
+    public ResponseEntity<List<KhoaAdminResponseDTO>> createList(@RequestBody @Valid List<KhoaAdminRequestDTO> dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(khoaService.createListKhoa(dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<KhoaAdminResponseDTO> getById(@PathVariable UUID id) {
+    public ResponseEntity<KhoaAdminResponseDTO.KhoaView> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(khoaService.getById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<KhoaAdminResponseDTO>> getAll() {
-        return ResponseEntity.ok(khoaService.getAllKhoaDTO());
+    public ResponseEntity<List<KhoaAdminResponseDTO.KhoaView>> getAll() {
+        return ResponseEntity.ok(khoaService.getAllKhoaView());
     }
 
     @GetMapping("/search")
@@ -42,7 +50,7 @@ public class KhoaAdminController {
 
     @PutMapping("/{id}")
     public ResponseEntity<KhoaAdminResponseDTO> update(@PathVariable UUID id,
-            @RequestBody @Valid KhoaAminRequestDTO dto) {
+            @RequestBody @Valid KhoaAdminRequestDTO dto) {
         return ResponseEntity.ok(khoaService.update(id, dto));
     }
 

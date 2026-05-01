@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KhoaAminRequestDTO {
+public class KhoaAdminRequestDTO {
 
     @NotBlank(message = "Mã khoa không được để trống")
     private String maKhoa;

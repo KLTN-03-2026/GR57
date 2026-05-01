@@ -3,17 +3,16 @@ package com.university.repository.admin;
 import com.university.dto.response.admin.MonHocAdminResponseDTO;
 import com.university.entity.MonHoc;
 
-import io.lettuce.core.dynamic.annotation.Param;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface MocHocAdminRepository extends JpaRepository<MonHoc, UUID> {
+public interface MonHocAdminRepository extends JpaRepository<MonHoc, UUID> {
 
     boolean existsByMaMonHoc(String maMonHoc);
 

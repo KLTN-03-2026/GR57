@@ -52,7 +52,7 @@ public class TruongAdminService {
     }
 
     public TruongAdminResponseDTO getById(UUID id) {
-        TruongAdminResponseDTO truong = truongRepository.findTruongById(id);
+        TruongAdminResponseDTO truong = truongRepository.findTruongResponseDTOById(id);
         return truong;
     }
 

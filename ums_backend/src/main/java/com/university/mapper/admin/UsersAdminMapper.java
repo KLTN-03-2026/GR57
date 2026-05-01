@@ -10,7 +10,8 @@ import com.university.entity.Users;
 @Component
 public class UsersAdminMapper {
 
-    public Users toEntity(UsersAdminRequestDTO dto, Users user) {
+    public Users toEntity(UsersAdminRequestDTO dto) {
+        Users user = new Users();
         user.setUserName(dto.getUserName());
         user.setEmail(dto.getEmail());
         user.setCccd(dto.getCccd());

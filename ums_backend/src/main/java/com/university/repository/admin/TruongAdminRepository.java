@@ -55,7 +55,7 @@ public interface TruongAdminRepository extends JpaRepository<Truong, UUID> {
              FROM Truong t
              WHERE t.id = :truongId
             """)
-    TruongAdminResponseDTO findTruongById(@Param("truongId") UUID truongId);
+    TruongAdminResponseDTO findTruongResponseDTOById(@Param("truongId") UUID truongId);
 
     @Query("""
              SELECT new com.university.dto.response.admin.TruongAdminResponseDTO(

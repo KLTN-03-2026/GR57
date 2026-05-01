@@ -13,6 +13,8 @@ import java.util.UUID;
 @Repository
 public interface GioHocAdminRepository extends JpaRepository<GioHoc, UUID> {
 
+    List<GioHocAdminResponseDTO.GioHocView> findAllProjectedBy();
+
     boolean existsByMaGioHoc(String maGioHoc);
 
     @Query("""
