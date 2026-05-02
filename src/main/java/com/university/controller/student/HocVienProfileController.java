@@ -1,14 +1,15 @@
-package com.university.controller.controller.student;
+package com.university.controller.student;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.university.service.student.HocVienProfileService;
-import java.util.UUID;
-import org.springframework.web.bind.annotation.*;
-
 import com.university.dto.request.student.HocVienProfileRequestDTO;
 import com.university.dto.response.student.HocVienProfileResponseDTO;
+import com.university.service.student.HocVienProfileService;
 
 import jakarta.validation.Valid;
 
@@ -22,22 +23,20 @@ public class HocVienProfileController {
     public HocVienProfileController(HocVienProfileService service) {
         this.service = service;
     }
-    
-    // @GetMapping("/test")
-    // public String test(){
-    //      return "API OK";
-    // }
 
-    @GetMapping("/{userId}")
-    public HocVienProfileResponseDTO getProfile(@PathVariable UUID userId) {
-        return service.getProfile(userId);
+    @GetMapping("/test")
+    public String test() {
+        return "API OK";
     }
 
-    @PutMapping("/{userId}")
-    public HocVienProfileResponseDTO updateProfile(
-            @PathVariable UUID userId,
-            @Valid @RequestBody HocVienProfileRequestDTO request) {
+    @GetMapping
+    public HocVienProfileResponseDTO getProfile() {
+        return service.getProfile();
+    }
 
-        return service.updateProfile(userId, request);
+    @PutMapping
+    public HocVienProfileResponseDTO updateProfile(
+            @Valid @RequestBody HocVienProfileRequestDTO request) {
+        return service.updateProfile(request);
     }
 }

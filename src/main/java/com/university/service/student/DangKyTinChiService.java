@@ -7,15 +7,16 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.university.config.SecurityUtils;
 import com.university.dto.request.student.DangKyTinChiRequestDTO;
 import com.university.dto.response.student.DangKyTinChiResponseDTO;
 import com.university.entity.DangKyTinChi;
 import com.university.entity.HocVien;
 import com.university.entity.LopHocPhan;
 import com.university.enums.TrangThaiLHP;
+import com.university.repository.student.DangKyTinChiRepository;
 import com.university.repository.student.HocVienStudentsRepository;
 import com.university.repository.student.LopHocPhanStudentsRepository;
-import com.university.repository.student.DangKyTinChiRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,123 +30,89 @@ public class DangKyTinChiService {
     private final HocVienStudentsRepository hocVienStudentsRepository;
     private final LopHocPhanStudentsRepository lopHocPhanStudentsRepository;
 
-    // ========================
-    // ĐĂNG KÝ TÍN CHỈ
-    // ========================
     public synchronized DangKyTinChiResponseDTO dangKy(DangKyTinChiRequestDTO request) {
+        UUID hocVienId = SecurityUtils.getCurrentHocVienId();
+        UUID lopHocPhanId = Objects.requireNonNull(request.getLopHocPhanId(), "LopHocPhanId khong duoc null");
 
-        // 1. Check đã đăng ký chưa
-        if (dangKyTinChiRepository.existsByHocVienIdAndLopHocPhanId(
-                request.getHocVienId(), request.getLopHocPhanId())) {
-            throw new RuntimeException("Học viên đã đăng ký lớp học phần này");
+        if (dangKyTinChiRepository.existsByHocVienIdAndLopHocPhanId(hocVienId, lopHocPhanId)) {
+            throw new RuntimeException("Hoc vien da dang ky lop hoc phan nay");
         }
 
-        // 2. Lấy học viên
-        HocVien hocVien = hocVienStudentsRepository.findById(Objects.requireNonNull(request.getHocVienId(), "HocVienId không được null"))
-                .orElseThrow(() -> new RuntimeException("Học viên không tồn tại"));
+        HocVien hocVien = hocVienStudentsRepository.findById(hocVienId)
+                .orElseThrow(() -> new RuntimeException("Hoc vien khong ton tai"));
 
-        // 3. Lấy lớp học phần
-        LopHocPhan lopHocPhan = lopHocPhanStudentsRepository.findById(Objects.requireNonNull(request.getLopHocPhanId(), "LopHocPhanId không được null"))
-                .orElseThrow(() -> new RuntimeException("Lớp học phần không tồn tại"));
+        LopHocPhan lopHocPhan = lopHocPhanStudentsRepository.findById(lopHocPhanId)
+                .orElseThrow(() -> new RuntimeException("Lop hoc phan khong ton tai"));
 
-        // 4. Check trạng thái
         if (lopHocPhan.getTrangThai() != TrangThaiLHP.MO_DANG_KY) {
-            throw new RuntimeException("Lớp học phần không mở đăng ký");
+            throw new RuntimeException("Lop hoc phan khong mo dang ky");
         }
 
-        // 5. Check hạn đăng ký
-        if (lopHocPhan.getHanDangKy() != null &&
-                LocalDateTime.now().isAfter(lopHocPhan.getHanDangKy())) {
-            throw new RuntimeException("Đã hết hạn đăng ký");
+        if (lopHocPhan.getHanDangKy() != null
+                && LocalDateTime.now().isAfter(lopHocPhan.getHanDangKy())) {
+            throw new RuntimeException("Da het han dang ky");
         }
 
-        // 6. Check trùng lịch (KHÔNG LOOP)
-        boolean trungLich = dangKyTinChiRepository.existsTrungLichFull(
-                request.getHocVienId(),
-                request.getLopHocPhanId()
-        );
-
+        boolean trungLich = dangKyTinChiRepository.existsTrungLichFull(hocVienId, lopHocPhanId);
         if (trungLich) {
-            throw new RuntimeException("Trùng lịch học");
+            throw new RuntimeException("Trung lich hoc");
         }
 
-        // 7. Check đã học môn
-        if (dangKyTinChiRepository.daHocMon(
-                request.getHocVienId(),
-                lopHocPhan.getMonHoc().getId())) {
-            throw new RuntimeException("Bạn đã học môn này rồi");
+        if (dangKyTinChiRepository.daHocMon(hocVienId, lopHocPhan.getMonHoc().getId())) {
+            throw new RuntimeException("Ban da hoc mon nay roi");
         }
 
-        // 8. Check môn tiên quyết
-        if (!dangKyTinChiRepository.daHocMonTienQuyet(
-                request.getHocVienId(),
-                lopHocPhan.getMonHoc().getId())) {
-            throw new RuntimeException("Chưa học môn tiên quyết");
+        if (!dangKyTinChiRepository.daHocMonTienQuyet(hocVienId, lopHocPhan.getMonHoc().getId())) {
+            throw new RuntimeException("Chua hoc mon tien quyet");
         }
 
-        // 9. Check tín chỉ tối đa
-        int tongTinChi = dangKyTinChiRepository.sumTinChiByHocVien(request.getHocVienId());
+        Integer tongTinChiDangKy = dangKyTinChiRepository.sumTinChiByHocVien(hocVienId);
+        int tongTinChi = tongTinChiDangKy == null ? 0 : tongTinChiDangKy;
         int tinChiMoi = lopHocPhan.getMonHoc().getSoTinChi();
 
         if (tongTinChi + tinChiMoi > 25) {
-            throw new RuntimeException("Vượt quá số tín chỉ tối đa");
+            throw new RuntimeException("Vuot qua so tin chi toi da");
         }
 
-        // 10. Check lớp còn chỗ (DÙNG COUNT DB)
-        int soLuong = dangKyTinChiRepository.countByLopHocPhanId(
-                request.getLopHocPhanId()
-        );
-
+        int soLuong = dangKyTinChiRepository.countByLopHocPhanId(lopHocPhanId);
         if (soLuong >= lopHocPhan.getSoLuongToiDa()) {
-            throw new RuntimeException("Lớp học phần đã đầy");
+            throw new RuntimeException("Lop hoc phan da day");
         }
 
-        // 11. Lưu đăng ký
         DangKyTinChi dangKy = new DangKyTinChi();
         dangKy.setHocVien(hocVien);
         dangKy.setLopHocPhan(lopHocPhan);
 
         dangKyTinChiRepository.save(dangKy);
 
-        // 12. Tăng số lượng đã đăng ký
-        lopHocPhan.setSoLuongToiDa(lopHocPhan.getSoLuongToiDa() + 1);
-        // 13. Trả kết quả
         return dangKyTinChiRepository
                 .findDangKyTinChiResponseDTOById(dangKy.getId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy kết quả"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay ket qua"));
     }
 
-    // ========================
-    // HỦY ĐĂNG KÝ (DÙNG PATH VARIABLE)
-    // ========================
     public void huyDangKyTinChi(UUID id) {
+        UUID hocVienId = SecurityUtils.getCurrentHocVienId();
 
-        // 1. Tìm đăng ký
         DangKyTinChi dangKyTinChi = dangKyTinChiRepository
-                .findById(Objects.requireNonNull(id, "Id không được null"))
-                .orElseThrow(() -> new RuntimeException("Đăng ký tín chỉ không tồn tại"));
+                .findById(Objects.requireNonNull(id, "Id khong duoc null"))
+                .orElseThrow(() -> new RuntimeException("Dang ky tin chi khong ton tai"));
+
+        if (!dangKyTinChi.getHocVien().getId().equals(hocVienId)) {
+            throw new RuntimeException("Khong duoc huy dang ky cua hoc vien khac");
+        }
 
         LopHocPhan lopHocPhan = dangKyTinChi.getLopHocPhan();
 
-        // 2. Check hạn hủy
-        if (lopHocPhan.getHanHuy() != null &&
-                LocalDateTime.now().isAfter(lopHocPhan.getHanHuy())) {
-            throw new RuntimeException("Đã quá hạn hủy đăng ký");
+        if (lopHocPhan.getHanHuy() != null
+                && LocalDateTime.now().isAfter(lopHocPhan.getHanHuy())) {
+            throw new RuntimeException("Da qua han huy dang ky");
         }
 
-        // 3. Giảm số lượng (AN TOÀN)
-        if (lopHocPhan.getSoLuongToiDa() > 0) {
-            lopHocPhan.setSoLuongToiDa(lopHocPhan.getSoLuongToiDa() - 1);
-        }
-
-        // 4. Xóa
         dangKyTinChiRepository.delete(dangKyTinChi);
     }
 
-    // ========================
-    // LẤY DANH SÁCH
-    // ========================
-    public List<DangKyTinChiResponseDTO> getDangKyTinChiByHocVienId(UUID hocVienId) {
+    public List<DangKyTinChiResponseDTO> getDangKyTinChiCuaToi() {
+        UUID hocVienId = SecurityUtils.getCurrentHocVienId();
         return dangKyTinChiRepository.findDangKyTinChiResponseDTOByHocVienId(hocVienId);
     }
 }

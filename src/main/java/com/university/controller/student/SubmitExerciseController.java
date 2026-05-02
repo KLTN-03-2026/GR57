@@ -1,4 +1,4 @@
-package com.university.controller.controller.student;
+package com.university.controller.student;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

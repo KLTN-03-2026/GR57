@@ -19,7 +19,7 @@ import com.university.entity.Exercise;
 import com.university.entity.SubmitExercise;
 import com.university.enums.ExerciseEnum;
 import com.university.repository.student.ExerciseStudentsRepository;
-import com.university.repository.SubmitExerciseStudentsRepository;
+import com.university.repository.student.SubmitExerciseStudentsRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

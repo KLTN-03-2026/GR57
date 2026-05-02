@@ -27,6 +27,7 @@ public interface ChuongTrinhDaoTaoRepository extends JpaRepository<ChuongTrinhDa
                  JOIN c.nganh n
                  JOIN c.monHoc m
               WHERE c.nganh.id = :nganhId
+              ORDER BY m.maMonHoc ASC
                """)
     List<ChuongTrinhDaoTaoResponseDTO> findByNganhId(@Param("nganhId") UUID nganhId);
 
@@ -43,9 +44,10 @@ public interface ChuongTrinhDaoTaoRepository extends JpaRepository<ChuongTrinhDa
               FROM ChuongTrinhDaoTao c
                 JOIN c.nganh n
                 JOIN c.monHoc m
-                WHERE c.nganh.id = :nganhId
+               WHERE c.nganh.id = :nganhId
                 AND (LOWER(m.maMonHoc) LIKE LOWER(CONCAT('%', :keyword, '%'))
                 OR LOWER(m.tenMonHoc) LIKE LOWER(CONCAT('%', :keyword, '%')))
+               ORDER BY m.maMonHoc ASC
                 """)
     List<ChuongTrinhDaoTaoResponseDTO> findByNganhIdAndKeyword(@Param("nganhId") UUID nganhId,
             @Param("keyword") String keyword);

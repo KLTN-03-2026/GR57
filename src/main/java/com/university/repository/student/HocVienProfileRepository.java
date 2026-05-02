@@ -37,5 +37,28 @@ WHERE u.id = :userId
 Optional<HocVienProfileResponseDTO> findHocVienProfileByUserId(UUID userId);
     // Optional<HocVienProfileResponseDTO> findHocVienProfileByUserId(@Param("userId") UUID userId);
 
+ @Query("""
+SELECT new com.university.dto.response.student.HocVienProfileResponseDTO(
+    u.id,
+    u.userName,
+    u.hoTen,
+    u.diaChi,
+    u.soDienThoai,
+    u.email,
+    u.gioiTinh,
+    u.ngaySinh,
+    u.cccd,
+    h.maHocVien,
+    n.id,
+    h.ngayNhapHoc,
+    h.ngayTotNghiep
+)
+FROM HocVien h
+JOIN h.users u
+JOIN h.nganh n
+WHERE h.id = :hocVienId
+""")
+Optional<HocVienProfileResponseDTO> findHocVienProfileByHocVienId(UUID hocVienId);
+
 Optional<HocVien> findByUsers_Id(UUID userId);
 }

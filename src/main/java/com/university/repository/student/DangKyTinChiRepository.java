@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.university.entity.DangKyTinChi;
 import com.university.dto.response.student.DangKyTinChiResponseDTO;
+import com.university.enums.TrangThaiLHP;
 
 public interface DangKyTinChiRepository extends JpaRepository<DangKyTinChi, UUID> {
 
@@ -132,4 +133,19 @@ public interface DangKyTinChiRepository extends JpaRepository<DangKyTinChi, UUID
     java.util.Optional<DangKyTinChiResponseDTO> findDangKyTinChiResponseDTOById(
             @Param("id") UUID id
     );
+
+    @Query("""
+        SELECT d
+        FROM DangKyTinChi d
+        JOIN FETCH d.lopHocPhan lhp
+        JOIN FETCH lhp.monHoc mh
+        JOIN FETCH lhp.hocKi hk
+        WHERE d.hocVien.id = :hocVienId
+        AND lhp.trangThai = :trangThai
+    """)
+    List<DangKyTinChi> findByHocVienIdAndTrangThai(
+            @Param("hocVienId") UUID hocVienId,
+            @Param("trangThai") TrangThaiLHP trangThai
+    );
+
 }

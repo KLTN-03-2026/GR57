@@ -24,7 +24,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private UserDetailsService userDetailsService; // ← Không inject qua constructor
+    private UserDetailsService userDetailsService;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;

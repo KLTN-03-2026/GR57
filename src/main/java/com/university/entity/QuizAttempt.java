@@ -1,5 +1,6 @@
 package com.university.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +28,13 @@ public class QuizAttempt {
     private Integer usedTime;
 
     private Integer remainingTime;
+    
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
 
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;

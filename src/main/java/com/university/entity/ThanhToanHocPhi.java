@@ -29,6 +29,12 @@ public class ThanhToanHocPhi {
     @Column(nullable = false)
     private String fileChungTu;
 
+    @Column(nullable = false, length = 50)
+    private String phuongThucThanhToan;
+
+    @Column(nullable = false, length = 100, unique = true)
+    private String maGiaoDichGateway;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

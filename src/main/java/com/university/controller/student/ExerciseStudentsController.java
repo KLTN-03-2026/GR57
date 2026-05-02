@@ -1,4 +1,4 @@
-package com.university.controller.controller.student;
+package com.university.controller.student;
 
 import java.util.List;
 import java.util.UUID;

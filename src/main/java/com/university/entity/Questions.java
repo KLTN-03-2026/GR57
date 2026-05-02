@@ -46,5 +46,5 @@ public class Questions {
 
     @OneToMany(mappedBy = "questions", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuizAttemptLog> dQuizAttemptLogs = new ArrayList<>();
-
+    
 }

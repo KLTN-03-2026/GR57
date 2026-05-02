@@ -28,6 +28,7 @@ public interface ThongBaoNguoiDungRepository extends JpaRepository<ThongBaoNguoi
     """)
     List<ThongBaoResponse> findThongBaoByUsersId(@Param("usersId") UUID usersId);
     Optional<ThongBaoNguoiDung> findByUsersIdAndThongBaoId(UUID usersId, UUID thongBaoId);
+    Optional<ThongBaoNguoiDung> findByIdAndUsersId(UUID id, UUID usersId);
     
     @Query("""
         SELECT tnd
