@@ -1,4 +1,4 @@
-# UMS - Hệ Thống Quản Lý Đào Tạo Đại Học
+# Xây dựng LearningHub Nền tảng quản lý đào tạo thông minh tích hợp Chatbot AI
 
 Hệ thống quản lý đào tạo toàn diện dành cho các trường đại học/cao đẳng, hỗ trợ 4 vai trò: **Quản trị viên**, **Giảng viên**, **Học viên** và **Kế toán**.
 
@@ -21,7 +21,7 @@ Hệ thống quản lý đào tạo toàn diện dành cho các trường đại
 
 ## Tổng quan
 
-UMS (University Management System) là ứng dụng web full-stack được xây dựng nhằm số hóa và tự động hóa các nghiệp vụ quản lý trong môi trường giáo dục đại học, bao gồm:
+UXây dựng LearningHub Nền tảng quản lý đào tạo thông minh tích hợp Chatbot AI là ứng dụng web full-stack được xây dựng nhằm số hóa và tự động hóa các nghiệp vụ quản lý trong môi trường giáo dục đại học, bao gồm:
 
 - Quản lý học vụ (chương trình đào tạo, môn học, lớp học phần, đăng ký tín chỉ)
 - Quản lý điểm số và đánh giá (bài tập, quiz, điểm thành phần)
