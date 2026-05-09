@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output (npm run build)
+dist/
+dist-ssr/
+
+# Vite
+.vite/
+
+# Logs & debug
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Local-only env (templates like .env.example stay tracked)
+.env.local
+.env*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+
+# Tests & coverage
+coverage/
+*.lcov
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional tooling caches
+.eslintcache
